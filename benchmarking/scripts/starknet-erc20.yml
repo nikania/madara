@@ -12,6 +12,11 @@ config:
           name: Users Connection
         - pause: 60
           name: Performance Testing
+  plugins:
+    ensure: {}
+  ensure:
+    thresholds:
+      - failed_extrinsic: 1
   variables:
     nonce: 0
   engines:

@@ -25,6 +25,7 @@
     "@polkadot/util": "^12.2.1",
     "artillery": "^2.0.0-30",
     "artillery-engine-substrate": "^1.0.7",
+    "artillery-plugin-ensure": "^1.1.3",
     "concurrently": "^8.1.0",
     "wait-on": "^7.0.1"
   }

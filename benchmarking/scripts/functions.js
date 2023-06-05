@@ -41,7 +41,61 @@ async function executeERC20Transfer(userContext, events, done) {
   // Update userContext nonce
   userContext.vars.nonce = nonce + 1;
 
+  await checkLastExtrinsicsSuccess(userContext, events);
+
   return done();
+}
+
+async function checkLastExtrinsicsSuccess(userContext, events) {
+  const signedBlock = await userContext.api.rpc.chain.getBlock();
+
+  // get the api and events at a specific block
+  const apiAt = await userContext.api.at(signedBlock.block.header.hash);
+  const allRecords = await apiAt.query.system.events();
+
+  // count the number of failed extrinsics
+  let failed_extrinsic = 0;
+  // map between the extrinsics and events
+  signedBlock.block.extrinsics.forEach(
+    ({ method: { method, section } }, index) => {
+      allRecords
+        // filter the specific events based on the phase and then the
+        // index of our extrinsic in the block
+        .filter(
+          ({ phase }) =>
+            phase.isApplyExtrinsic && phase.asApplyExtrinsic.eq(index)
+        )
+        // test the events against the specific types we are looking for
+        .forEach(({ event }) => {
+          if (userContext.api.events.system.ExtrinsicFailed.is(event)) {
+            // extract the data for this event
+            const [dispatchError, dispatchInfo] = event.data;
+            let errorInfo;
+
+            // decode the error
+            if (dispatchError.isModule) {
+              // for module errors, we have the section indexed, lookup
+              // (For specific known errors, we can also do a check against the
+              // api.errors.<module>.<ErrorName>.is(dispatchError.asModule) guard)
+              const decoded = userContext.api.registry.findMetaError(
+                dispatchError.asModule
+              );
+
+              errorInfo = `${decoded.section}.${decoded.name}`;
+            } else {
+              // Other, CannotLookup, BadOrigin, no extra info
+              errorInfo = dispatchError.toString();
+            }
+            // increase failed extrinsics count
+            failed_extrinsic += 1;
+            console.log(
+              `${section}.${method}:: ExtrinsicFailed:: ${errorInfo}`
+            );
+          }
+        });
+    }
+  );
+  events.emit("counter", "failed_extrinsic", failed_extrinsic);
 }
 
 async function _setupToken(userContext, user, contractAddress) {
