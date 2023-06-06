@@ -321,6 +321,13 @@
 <a href="#321" id="321">321</a>
 <a href="#322" id="322">322</a>
 <a href="#323" id="323">323</a>
+<a href="#324" id="324">324</a>
+<a href="#325" id="325">325</a>
+<a href="#326" id="326">326</a>
+<a href="#327" id="327">327</a>
+<a href="#328" id="328">328</a>
+<a href="#329" id="329">329</a>
+<a href="#330" id="330">330</a>
 </pre><pre class="rust"><code><span class="kw">use </span>blockifier::execution::contract_class::ContractClass;
 <span class="kw">use </span>madara_runtime::{
     AccountId, AuraConfig, BalancesConfig, EnableManualSeal, GenesisConfig, GrandpaConfig, Signature, SudoConfig,
@@ -461,7 +468,14 @@
             testnet_genesis(
                 wasm_binary,
                 <span class="comment">// Initial PoA authorities
-                </span><span class="macro">vec!</span>[authority_keys_from_seed(<span class="string">&quot;Alice&quot;</span>), authority_keys_from_seed(<span class="string">&quot;Bob&quot;</span>)],
+                </span><span class="macro">vec!</span>[
+                    authority_keys_from_seed(<span class="string">&quot;Alice&quot;</span>),
+                    authority_keys_from_seed(<span class="string">&quot;Bob&quot;</span>),
+                    authority_keys_from_seed(<span class="string">&quot;Charlie&quot;</span>),
+                    authority_keys_from_seed(<span class="string">&quot;Dave&quot;</span>),
+                    authority_keys_from_seed(<span class="string">&quot;Eve&quot;</span>),
+                    authority_keys_from_seed(<span class="string">&quot;Ferdie&quot;</span>),
+                ],
                 <span class="comment">// Sudo account
                 </span>get_account_id_from_seed::&lt;sr25519::Public&gt;(<span class="string">&quot;Alice&quot;</span>),
                 <span class="comment">// Pre-funded accounts
