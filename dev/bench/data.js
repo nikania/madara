@@ -1,6 +1,6 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1685892995457,
-  "repoUrl": "https://github.com/keep-starknet-strange/madara",
+  "lastUpdate": 1686050723784,
+  "repoUrl": "https://github.com/nikania/madara",
   "entries": {
     "Benchmark": [
       {
@@ -992,6 +992,42 @@ window.BENCHMARK_DATA = {
             "value": 125.58333333333333,
             "unit": "tps",
             "extra": "CPU Count: 16\nCPU Model: Intel(R) Xeon(R) Platinum 8275CL CPU @ 3.00GHz\nCPU Speed (MHz): 3600\nTotal Memory: 32.822730752 GB\nPlatform: linux\nRelease: 5.19.0-1025-aws\nArchitecture: x64"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "Artevolve@yahoo.com",
+            "name": "0xevolve",
+            "username": "EvolveArt"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "529d5a6e6af276cf9b70bbc585509f3f69e842ec",
+          "message": "fix: to_rpc_contract_class ✨ (#485)\n\nCo-authored-by: Lucas @ StarkWare <70894690+LucasLvy@users.noreply.github.com>",
+          "timestamp": "2023-06-06T09:55:23+02:00",
+          "tree_id": "f23055a83f3a51849bc2d1d1b6cb430907989cf1",
+          "url": "https://github.com/nikania/madara/commit/529d5a6e6af276cf9b70bbc585509f3f69e842ec"
+        },
+        "date": 1686050721642,
+        "tool": "customBiggerIsBetter",
+        "benches": [
+          {
+            "name": "Average Extrinsics per block",
+            "value": 244.75,
+            "unit": "extrinsics/block",
+            "extra": "CPU Count: 6\nCPU Model: AMD Ryzen 5 4500U with Radeon Graphics\nCPU Speed (MHz): 2370\nTotal Memory: 12.873723904 GB\nPlatform: linux\nRelease: 5.4.72-microsoft-standard-WSL2\nArchitecture: x64"
+          },
+          {
+            "name": "Average TPS",
+            "value": 40.791666666666664,
+            "unit": "tps",
+            "extra": "CPU Count: 6\nCPU Model: AMD Ryzen 5 4500U with Radeon Graphics\nCPU Speed (MHz): 2370\nTotal Memory: 12.873723904 GB\nPlatform: linux\nRelease: 5.4.72-microsoft-standard-WSL2\nArchitecture: x64"
           }
         ]
       }
