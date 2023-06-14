@@ -185,13 +185,18 @@
 <a href="#185" id="185">185</a>
 <a href="#186" id="186">186</a>
 <a href="#187" id="187">187</a>
+<a href="#188" id="188">188</a>
+<a href="#189" id="189">189</a>
+<a href="#190" id="190">190</a>
+<a href="#191" id="191">191</a>
+<a href="#192" id="192">192</a>
+<a href="#193" id="193">193</a>
 </pre><pre class="rust"><code><span class="kw">use </span>frame_benchmarking_cli::{BenchmarkCmd, ExtrinsicFactory, SUBSTRATE_REFERENCE_HARDWARE};
-<span class="kw">use </span>madara_runtime::{Block, EXISTENTIAL_DEPOSIT};
-<span class="kw">use </span>sc_cli::{ChainSpec, RuntimeVersion, SubstrateCli};
-<span class="kw">use </span>sp_keyring::Sr25519Keyring;
+<span class="kw">use </span>madara_runtime::Block;
+<span class="kw">use </span>sc_cli::{ChainSpec, RpcMethods, RuntimeVersion, SubstrateCli};
 
-<span class="kw">use </span><span class="kw">crate</span>::benchmarking::{inherent_benchmark_data, RemarkBuilder, TransferKeepAliveBuilder};
-<span class="kw">use </span><span class="kw">crate</span>::cli::{Cli, Subcommand};
+<span class="kw">use </span><span class="kw">crate</span>::benchmarking::{inherent_benchmark_data, RemarkBuilder};
+<span class="kw">use </span><span class="kw">crate</span>::cli::{Cli, Subcommand, Testnet};
 <span class="kw">use crate</span>::{chain_spec, service};
 
 <span class="kw">impl </span>SubstrateCli <span class="kw">for </span>Cli {
@@ -237,7 +242,7 @@
 
 <span class="doccomment">/// Parse and run command line arguments
 </span><span class="kw">pub fn </span>run() -&gt; sc_cli::Result&lt;()&gt; {
-    <span class="kw">let </span>cli = Cli::from_args();
+    <span class="kw">let </span><span class="kw-2">mut </span>cli = Cli::from_args();
 
     <span class="kw">match </span><span class="kw-2">&amp;</span>cli.subcommand {
         <span class="prelude-val">Some</span>(Subcommand::Key(cmd)) =&gt; cmd.run(<span class="kw-2">&amp;</span>cli),
@@ -328,15 +333,8 @@
                     }
                     BenchmarkCmd::Extrinsic(cmd) =&gt; {
                         <span class="kw">let </span>(client, <span class="kw">_</span>, <span class="kw">_</span>, <span class="kw">_</span>, <span class="kw">_</span>) = service::new_chain_ops(<span class="kw-2">&amp;mut </span>config)<span class="question-mark">?</span>;
-                        <span class="comment">// Register the *Remark* and *TKA* builders.
-                        </span><span class="kw">let </span>ext_factory = ExtrinsicFactory(<span class="macro">vec!</span>[
-                            Box::new(RemarkBuilder::new(client.clone())),
-                            Box::new(TransferKeepAliveBuilder::new(
-                                client.clone(),
-                                Sr25519Keyring::Alice.to_account_id(),
-                                EXISTENTIAL_DEPOSIT,
-                            )),
-                        ]);
+                        <span class="comment">// Register the *Remark* builder.
+                        </span><span class="kw">let </span>ext_factory = ExtrinsicFactory(<span class="macro">vec!</span>[Box::new(RemarkBuilder::new(client.clone()))]);
 
                         cmd.run(client, inherent_benchmark_data()<span class="question-mark">?</span>, Vec::new(), <span class="kw-2">&amp;</span>ext_factory)
                     }
@@ -365,7 +363,21 @@
             runner.sync_run(|config| cmd.run::&lt;Block&gt;(<span class="kw-2">&amp;</span>config))
         }
         <span class="prelude-val">None </span>=&gt; {
-            <span class="kw">let </span>runner = cli.create_runner(<span class="kw-2">&amp;</span>cli.run)<span class="question-mark">?</span>;
+            <span class="kw">if </span>cli.run.testnet.is_some() {
+                <span class="kw">let </span>home_path = std::env::var(<span class="string">&quot;HOME&quot;</span>).unwrap_or(std::env::var(<span class="string">&quot;USERPROFILE&quot;</span>).unwrap_or(<span class="string">&quot;.&quot;</span>.into()));
+                cli.run.run_cmd.network_params.node_key_params.node_key_file =
+                    <span class="prelude-val">Some</span>((home_path.clone() + <span class="string">&quot;/.madara/p2p-key.ed25519&quot;</span>).into());
+                cli.run.run_cmd.shared_params.base_path = <span class="prelude-val">Some</span>((home_path.clone() + <span class="string">&quot;/.madara&quot;</span>).into());
+                <span class="kw">if let </span><span class="prelude-val">Some</span>(Testnet::Sharingan) = cli.run.testnet {
+                    cli.run.run_cmd.shared_params.chain =
+                        <span class="prelude-val">Some</span>(home_path + <span class="string">&quot;/.madara/chain-specs/testnet-sharingan-raw.json&quot;</span>);
+                }
+
+                cli.run.run_cmd.shared_params.dev = <span class="bool-val">true</span>;
+                cli.run.run_cmd.rpc_external = <span class="bool-val">true</span>;
+                cli.run.run_cmd.rpc_methods = RpcMethods::Unsafe;
+            }
+            <span class="kw">let </span>runner = cli.create_runner(<span class="kw-2">&amp;</span>cli.run.run_cmd)<span class="question-mark">?</span>;
             runner.run_node_until_exit(|config| <span class="kw">async move </span>{
                 service::new_full(config, cli.sealing).map_err(sc_cli::Error::Service)
             })
