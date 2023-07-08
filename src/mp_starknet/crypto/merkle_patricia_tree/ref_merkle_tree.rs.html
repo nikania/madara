@@ -491,7 +491,7 @@
 
 <span class="kw">use </span><span class="kw">crate</span>::crypto::merkle_patricia_tree::ref_merkle_node::{BinaryNode, Direction, EdgeNode, Node};
 <span class="kw">use </span><span class="kw">crate</span>::execution::felt252_wrapper::Felt252Wrapper;
-<span class="kw">use </span><span class="kw">crate</span>::traits::hash::CryptoHasherT;
+<span class="kw">use </span><span class="kw">crate</span>::traits::hash::HasherT;
 
 <span class="doccomment">/// Lightweight representation of [BinaryNode]. Only holds left and right hashes.
 </span><span class="attr">#[derive(Debug, PartialEq, Eq)]
@@ -547,12 +547,12 @@
 ///
 /// For more information on how this functions internally, see [here](super::ref_merkle_tree).
 </span><span class="attr">#[derive(Debug, Clone)]
-</span><span class="kw">pub struct </span>RefMerkleTree&lt;H: CryptoHasherT&gt; {
+</span><span class="kw">pub struct </span>RefMerkleTree&lt;H: HasherT&gt; {
     root: Rc&lt;RefCell&lt;Node&gt;&gt;,
     _hasher: PhantomData&lt;H&gt;,
 }
 
-<span class="kw">impl</span>&lt;H: CryptoHasherT&gt; RefMerkleTree&lt;H&gt; {
+<span class="kw">impl</span>&lt;H: HasherT&gt; RefMerkleTree&lt;H&gt; {
     <span class="doccomment">/// Less visible initialization for `MerkleTree&lt;T&gt;` as the main entry points should be
     /// [`MerkleTree::&lt;RcNodeStorage&gt;::load`] for persistent trees and [`MerkleTree::empty`] for
     /// transient ones.
@@ -570,7 +570,7 @@
     ///
     /// Note that the root is reference counted in storage. Committing the
     /// same tree again will therefore increment the count again.
-    </span><span class="kw">pub fn </span>commit(<span class="kw-2">mut </span><span class="self">self</span>) -&gt; Felt252Wrapper {
+    </span><span class="kw">pub fn </span>commit(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; Felt252Wrapper {
         <span class="self">self</span>.commit_mut()
     }
     <span class="doccomment">/// Return the state root.
